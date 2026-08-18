@@ -6,134 +6,106 @@ const images = document.querySelectorAll(".image-item");
 const texts = document.querySelectorAll(".text-section");
 
 
+// ==============================
+// OBSERVA AS IMAGENS
+// ==============================
 
-function atualizarTexto() {
+const observer = new IntersectionObserver(
 
-    const centro =
-        imagesScroll.getBoundingClientRect().top
-        +
-        imagesScroll.clientHeight / 2;
+    (entries) => {
 
+        entries.forEach((entry) => {
 
+            // Verifica se a imagem está visível
+            if (entry.isIntersecting) {
 
-    let imagemMaisProxima = null;
-
-    let menorDistancia = Infinity;
-
-
-
-    images.forEach((imagem) => {
-
-        const rect = imagem.getBoundingClientRect();
-
-        const centroImagem =
-            rect.top
-            +
-            rect.height / 2;
+                // Pega o nome da seção
+                const sectionName =
+                    entry.target.dataset.section;
 
 
+                // ==============================
+                // ATIVA A IMAGEM
+                // ==============================
 
-        const distancia =
-            Math.abs(centroImagem - centro);
+                images.forEach((image) => {
 
+                    image.classList.remove("ativo");
 
+                });
 
-        if (distancia < menorDistancia) {
-
-            menorDistancia = distancia;
-
-            imagemMaisProxima = imagem;
-
-        }
-
-    });
+                entry.target.classList.add("ativo");
 
 
+                // ==============================
+                // MUDA O TEXTO
+                // ==============================
 
-    if (!imagemMaisProxima) {
-        return;
+                texts.forEach((text) => {
+
+                    text.classList.remove("ativo");
+
+                });
+
+
+                // Procura o texto correspondente
+                const textAtual =
+                    document.getElementById(sectionName);
+
+
+                // Ativa o texto
+                if (textAtual) {
+
+                    textAtual.classList.add("ativo");
+
+                }
+
+            }
+
+        });
+
+    },
+
+    {
+        // O scroll das imagens será a área observada
+        root: imagesScroll,
+
+        // Considera a imagem ativa quando
+        // pelo menos 60% dela estiver visível
+        threshold: 0.6
     }
 
-
-
-    const secao =
-        imagemMaisProxima.dataset.section;
-
-
-
-    // Remove o ativo de todas as imagens
-
-    images.forEach((imagem) => {
-
-        imagem.classList.remove("ativo");
-
-    });
-
-
-
-    // Ativa a imagem atual
-
-    imagemMaisProxima.classList.add("ativo");
-
-
-
-    // Remove o ativo dos textos
-
-    texts.forEach((texto) => {
-
-        texto.classList.remove("ativo");
-
-    });
-
-
-
-    // Procura o texto correspondente
-
-    const textoAtual =
-        document.getElementById(secao);
-
-
-
-    if (textoAtual) {
-
-        textoAtual.classList.add("ativo");
-
-    }
-
-}
-
-
-
-// Detecta o scroll
-
-imagesScroll.addEventListener(
-    "scroll",
-    atualizarTexto
 );
 
 
+// ==============================
+// COMEÇA A OBSERVAR AS IMAGENS
+// ==============================
 
-// Também atualiza ao carregar
+images.forEach((image) => {
 
-atualizarTexto();
+    observer.observe(image);
+
+});
 
 
+// ==============================
+// CLIQUE NA IMAGEM
+// ==============================
 
-// Permite clicar na imagem
+images.forEach((image) => {
 
-images.forEach((imagem) => {
+    image.addEventListener("click", () => {
 
-    imagem.addEventListener(
-        "click",
-        () => {
+        image.scrollIntoView({
 
-            imagem.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
+            behavior: "smooth",
 
-        }
-    );
+            block: "start"
+
+        });
+
+    });
 
 });
 ```
